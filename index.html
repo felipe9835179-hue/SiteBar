@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bar do Felipe | Sistema de Gestão Ultra Profissional</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* 
+           ========================================
+           SISTEMA DE DESIGN E VARIÁVEIS
+           ========================================
+        */
+        :root {
+            --primary: #fbbf24;
+            --primary-hover: #f59e0b;
+            --bg: #020617;
+            --card: #1e293b;
+            --card-hover: #334155;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --fiado: #a855f7;
+            --info: #3b82f6; /* Nova cor para Backup/Info */
+            --border: #334155;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* RESET E ESTILOS GERAIS */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; outline: none; }
+        
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            line-height: 1.6; 
+            overflow-x: hidden; 
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* SCROLLBAR CUSTOMIZADA PARA LOOK MODERNO */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; border: 2px solid var(--bg); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* NAVEGAÇÃO SUPERIOR DINÂMICA */
+        nav { 
+            background: rgba(15, 23, 42, 0.8); 
+            backdrop-filter: blur(16px); 
+            padding: 0 2rem; 
+            display: flex; 
+            gap: 30px; 
+            border-bottom: 1px solid var(--border); 
+            position: sticky; 
+            top: 0; 
+            z-index: 2000; 
+            overflow-x: auto;
+            justify-content: center;
+            box-shadow: var(--shadow);
+        }
+
+        nav button { 
+            background: none; border: none; color: var(--text-muted); 
+            cursor: pointer; font-weight: 700; font-size: 0.75rem; 
+            text-transform: uppercase; padding: 25px 15px; 
+            white-space: nowrap; transition: var(--transition);
+            border-bottom: 4px solid transparent;
+            letter-spacing: 1.2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        nav button:hover { color: var(--primary); background: rgba(251, 191, 36, 0.05); }
+        nav button.active { color: var(--primary); border-bottom-color: var(--primary); background: rgba(251, 191, 36, 0.08); }
+
+        /* CONTAINERS E GRIDS */
+        .container { padding: 40px; max-width: 1600px; margin: auto; animation: pageEnter 0.5s ease-out; }
+        @keyframes pageEnter { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .hidden { display: none !important; }
+        
+        .grid-main { display: grid; grid-template-columns: 1fr 500px; gap: 40px; align-items: start; }
+        @media (max-width: 1200px) { .grid-main { grid-template-columns: 1fr; } }
+
+        /* COMPONENTES DE CARD */
+        .card { 
+            background: var(--card); 
+            border-radius: 24px; 
+            padding: 30px; 
+            margin-bottom: 30px; 
+            border: 1px solid var(--border); 
+            box-shadow: var(--shadow); 
+            transition: var(--transition);
+            position: relative;
+        }
+        .card:hover { border-color: #475569; transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+        /* SISTEMA DE ATENDIMENTO (MESAS/CLIENTES) */
+        .search-container { position: relative; margin-bottom: 30px; }
+        .search-container input { 
+            padding-left: 60px; height: 70px; border-radius: 20px; 
+            background: var(--card); border: 2px solid var(--border);
+            font-size: 1.1rem;
+        }
+        .search-container .icon { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.2rem; }
+
+        .cliente-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .cliente-btn { 
+            padding: 30px 20px; background: #0f172a; border: 1px solid var(--border); 
+            border-radius: 22px; cursor: pointer; transition: var(--transition);
+            text-align: left; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: space-between;
+            min-height: 140px;
+        }
+        .cliente-btn:hover { border-color: var(--primary); background: #1e293b; }
+        .cliente-btn.active { 
+            background: var(--primary); color: #000; border-color: white; 
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
+            transform: scale(1.03);
+        }
+        .cliente-btn .nome { font-size: 1.2rem; font-weight: 800; margin-bottom: 10px; }
+        .cliente-btn .valor { font-size: 1.6rem; font-weight: 900; letter-spacing: -1px; }
+        .cliente-btn .meta { font-size: 0.7rem; text-transform: uppercase; opacity: 0.7; font-weight: 700; }
+
+        /* ABA DE VENDAS RÁPIDAS (FAVORITOS) */
+        .quick-sales-bar {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px dashed var(--border);
+        }
+        .quick-sales-title {
+            font-size: 0.75rem; font-weight: 900; color: var(--primary);
+            text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;
+        }
+        .favoritos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+        }
+        .btn-quick {
+            background: #334155; border: 1px solid rgba(255,255,255,0.1);
+            color: white; padding: 12px; border-radius: 12px;
+            font-size: 0.8rem; font-weight: 700; cursor: pointer;
+            transition: var(--transition); text-align: center;
+        }
+        .btn-quick:hover { background: var(--primary); color: #000; transform: scale(1.05); }
+
+        /* FORMULÁRIOS PROFISSIONAIS */
+        .field-group { margin-bottom: 20px; }
+        .field-group label { display: block; font-size: 0.8rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; margin-left: 5px; }
+        
+        input, select { 
+            background: #020617; border: 2px solid var(--border); 
+            color: white; padding: 18px; border-radius: 16px; 
+            outline: none; width: 100%; transition: var(--transition);
+            font-size: 1rem; font-weight: 600;
+        }
+        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.1); }
+        
+        /* BOTÕES DE AÇÃO */
+        .btn { 
+            padding: 20px 30px; border-radius: 16px; border: none; 
+            font-weight: 800; cursor: pointer; text-transform: uppercase; 
+            font-size: 0.9rem; transition: var(--transition); 
+            display: inline-flex; align-items: center; justify-content: center; 
+            gap: 12px; letter-spacing: 0.5px;
+        }
+        .btn-primary { background: var(--primary); color: #000; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(245, 158, 11, 0.2); }
+        
+        .btn-success { background: var(--success); color: white; width: 100%; }
+        .btn-success:hover { background: #059669; }
+        
+        .btn-fiado { background: var(--fiado); color: white; width: 100%; }
+        .btn-fiado:hover { background: #9333ea; }
+
+        .btn-info { background: var(--info); color: white; }
+        .btn-info:hover { background: #2563eb; }
+        
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-muted); }
+        .btn-outline:hover { border-color: var(--text-muted); color: white; }
+
+        .btn-whatsapp { background: #25d366; color: white; font-size: 0.75rem; padding: 10px 15px; }
+        .btn-whatsapp:hover { background: #128c7e; transform: scale(1.05); }
+
+        /* LISTA DE ITENS NA COMANDA */
+        .itens-comanda-container {
+            margin: 25px 0; min-height: 300px; max-height: 500px;
+            overflow-y: auto; padding-right: 10px;
+        }
+        .item-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px; background: rgba(15, 23, 42, 0.5);
+            border-radius: 16px; margin-bottom: 10px; border: 1px solid transparent;
+            animation: itemFadeIn 0.3s ease;
+        }
+        @keyframes itemFadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .item-row:hover { border-color: var(--border); background: rgba(15, 23, 42, 0.8); }
+        .item-row .info h4 { font-size: 1rem; font-weight: 700; }
+        .item-row .info span { font-size: 0.8rem; color: var(--text-muted); }
+        .item-row .price { font-weight: 800; color: var(--primary); }
+        .remove-btn { color: var(--danger); cursor: pointer; padding: 10px; border-radius: 12px; transition: 0.2s; }
+        .remove-btn:hover { background: rgba(239, 68, 68, 0.1); }
+
+        /* TABELAS */
+        .table-wrapper { overflow-x: auto; border-radius: 20px; border: 1px solid var(--border); background: var(--card); }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 20px; background: rgba(0,0,0,0.2); color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; font-weight: 900; letter-spacing: 2px; }
+        td { padding: 20px; border-bottom: 1px solid var(--border); }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+
+        /* ALERTAS */
+        .alert-estoque {
+            background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
+            color: white; padding: 20px; border-radius: 18px; margin-bottom: 30px;
+            display: flex; align-items: center; justify-content: space-between;
+            font-weight: 800; box-shadow: var(--shadow-lg); animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+
+        /* FINANCEIRO RESUMO */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 40px; }
+        .stat-card { background: var(--card); padding: 35px; border-radius: 28px; border: 1px solid var(--border); text-align: center; }
+        .stat-card span { font-size: 0.8rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
+        .stat-card h2 { font-size: 2.5rem; font-weight: 900; margin-top: 10px; }
+
+        .badge { padding: 6px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; }
+        .badge-unid { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .badge-fardo { background: rgba(14, 165, 233, 0.2); color: #0ea5e9; }
+
+        /* MODAL DE DIVISÃO */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: flex; align-items: center;
+            justify-content: center; z-index: 5000;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <button id="nav-vendas" class="active" onclick="app.showTab('vendas')">🍺 Atendimento</button>
+    <button id="nav-fiados" onclick="app.showTab('fiados')">📓 Caderno de Fiados</button>
+    <button id="nav-caixa" onclick="app.showTab('caixa')">💸 Saídas de Caixa</button>
+    <button id="nav-estoque" onclick="app.showTab('estoque')">📦 Estoque & Produtos</button>
+    <button id="nav-relatorio" onclick="app.showTab('relatorio')">📊 Relatórios</button>
+    <button id="nav-config" onclick="app.showTab('config')">⚙️ Ajustes & Backup</button>
+</nav>
+
+<div class="container">
+    
+    <div id="estoque-alerta-area"></div>
+
+    <!-- TELA DE ATENDIMENTO -->
+    <div id="tab-vendas">
+        <div class="grid-main">
+            <!-- COLUNA ESQUERDA: COMANDAS -->
+            <div class="atendimento-main">
+                <div class="card">
+                    <h3 style="margin-bottom: 25px; font-weight: 900; font-size: 1.4rem;">🧾 Abrir Nova Conta</h3>
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 15px;">
+                        <input type="text" id="input-cliente" placeholder="Nome do cliente ou número da mesa..." onkeypress="if(event.key==='Enter') app.abrirComanda()">
+                        <button class="btn btn-primary" onclick="app.abrirComanda()">ABRIR</button>
+                    </div>
+                </div>
+
+                <div class="search-container">
+                    <span class="icon">🔍</span>
+                    <input type="text" id="busca-atendimento" placeholder="Procurar comanda ativa..." oninput="app.renderClientes()">
+                </div>
+
+                <div id="lista-clientes" class="cliente-grid"></div>
+            </div>
+
+            <!-- COLUNA DIREITA: DETALHES DA CONTA -->
+            <div class="card" id="painel-venda">
+                <div id="painel-vazio" style="text-align: center; padding: 100px 20px;">
+                    <span style="font-size: 5rem; display: block; margin-bottom: 20px; opacity: 0.2;">🍺</span>
+                    <h3 style="color: var(--text-muted);">Selecione um cliente para gerenciar a conta</h3>
+                </div>
+
+                <div id="painel-ativo" class="hidden">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px;">
+                        <div>
+                            <h2 id="cliente-nome-topo" style="font-size: 2rem; font-weight: 900; color: var(--primary);">---</h2>
+                            <p id="cliente-status" style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Conta Aberta</p>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
+                            <button class="btn btn-whatsapp" onclick="app.compartilharWhatsApp()">📱 MANDAR CONTA</button>
+                            <button class="btn-outline" style="padding: 5px 10px; font-size: 0.6rem; border-radius: 8px;" onclick="app.cancelarComanda()">CANCELAR CONTA</button>
+                        </div>
+                    </div>
+
+                    <!-- ABA DE VENDAS RÁPIDAS (NOVO) -->
+                    <div class="quick-sales-bar">
+                        <div class="quick-sales-title">⭐ Favoritos / Venda Rápida</div>
+                        <div id="favoritos-container" class="favoritos-grid">
+                            <!-- Injetado via JS -->
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Lançar Produto Manual</label>
+                        <select id="select-produtos-venda" style="height: 65px;"></select>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                        <button class="btn btn-primary" style="height: 65px; font-size: 1.1rem;" onclick="app.lancarProduto()">ADICIONAR</button>
+                        <button class="btn btn-outline" style="height: 65px; font-size: 0.8rem; color: var(--danger);" onclick="app.darCortesia()">🎁 CORTESIA</button>
+                    </div>
+
+                    <div id="itens-comanda" class="itens-comanda-container"></div>
+
+                    <div style="border-top: 2px solid var(--border); padding-top: 30px; margin-top: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 25px;">
+                            <span style="font-weight: 800; font-size: 0.9rem; color: var(--text-muted);">TOTAL DO MOMENTO</span>
+                            <h2 id="total-venda-exibicao" style="font-size: 3.2rem; font-weight: 900; color: white;">R$ 0,00</h2>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+                            <button class="btn btn-outline" style="height: 50px;" onclick="app.abrirModalDividir()">➗ DIVIDIR CONTA</button>
+                            <button class="btn btn-success" style="height: 80px; font-size: 1.2rem;" onclick="app.fecharVenda('pago')">💵 FINALIZAR E RECEBER</button>
+                            <button class="btn btn-fiado" style="height: 60px;" onclick="app.fecharVenda('fiado')">📓 PENDURAR NO CADERNO</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CADERNO DE FIADOS -->
+    <div id="tab-fiados" class="hidden">
+        <div class="card">
+            <h2 style="font-size: 2rem; font-weight: 900; color: var(--fiado); margin-bottom: 30px;">📓 Caderno de Devedores</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome do Cliente</th>
+                            <th>Última Compra</th>
+                            <th>Dívida Acumulada</th>
+                            <th style="text-align: right;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-fiados"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- GESTÃO DE ESTOQUE -->
+    <div id="tab-estoque" class="hidden">
+        <div class="card">
+            <h2 style="font-size: 2rem; font-weight: 900; margin-bottom: 30px;">📦 Gerenciar Produtos & Estoque</h2>
+            <input type="hidden" id="estoque-id-edit">
+            
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+                <div class="field-group">
+                    <label>Nome do Produto</label>
+                    <input type="text" id="estoque-nome" placeholder="Ex: Skol 600ml">
+                </div>
+                <div class="field-group">
+                    <label>Preço Custo (R$)</label>
+                    <input type="number" id="estoque-custo" step="0.01" value="0.00">
+                </div>
+                <div class="field-group">
+                    <label>Preço Venda (R$)</label>
+                    <input type="number" id="estoque-venda" step="0.01" value="0.00">
+                </div>
+                <div class="field-group">
+                    <label>Estoque Mínimo</label>
+                    <input type="number" id="estoque-alerta" value="5">
+                </div>
+            </div>
+
+            <!-- ENTRADA INTELIGENTE -->
+            <div style="background: rgba(0,0,0,0.2); padding: 25px; border-radius: 20px; border: 1px solid var(--border); display: grid; grid-template-columns: 1.5fr 1fr 1fr auto; gap: 20px; align-items: center;">
+                <div class="field-group" style="margin:0">
+                    <label>Tipo de Entrada</label>
+                    <select id="estoque-tipo-entrada" onchange="app.toggleCamposVolumes()">
+                        <option value="unidade">📦 Por Unidade Individual</option>
+                        <option value="fardo">📦 Por Fardo / Engradado</option>
+                        <option value="caixa">📦 Por Caixa de Atacado</option>
+                    </select>
+                </div>
+                <div id="col-qtd-simples" class="field-group" style="margin:0">
+                    <label>Qtd Inicial/Adicionar</label>
+                    <input type="number" id="estoque-qtd-base" value="0">
+                </div>
+                <div id="col-volumes" class="field-group hidden" style="margin:0">
+                    <label>Qtd Volumes</label>
+                    <input type="number" id="estoque-vols" value="0">
+                </div>
+                <div id="col-itens-vol" class="field-group hidden" style="margin:0">
+                    <label>Itens por Volume</label>
+                    <input type="number" id="estoque-itens-vol" value="12">
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; padding-top: 20px;">
+                    <input type="checkbox" id="estoque-favorito" style="width: 25px; height: 25px; cursor: pointer;">
+                    <label style="margin:0; cursor: pointer;">⭐ Favorito?</label>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; display: flex; gap: 15px;">
+                <button class="btn btn-primary" style="flex: 2;" onclick="app.salvarProduto()">SALVAR NO SISTEMA</button>
+                <button class="btn btn-outline" id="btn-cancelar-edit" style="display:none; flex: 1;" onclick="app.limparFormEstoque()">CANCELAR</button>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Preço Venda</th>
+                        <th>Estoque Atual</th>
+                        <th>Alerta</th>
+                        <th style="text-align: right;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-estoque"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SAÍDAS DE CAIXA -->
+    <div id="tab-caixa" class="hidden">
+        <div class="card">
+            <h2 style="font-size: 2rem; font-weight: 900; color: var(--danger); margin-bottom: 30px;">💸 Registrar Sangria / Saída</h2>
+            <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 20px; align-items: flex-end;">
+                <div class="field-group">
+                    <label>Motivo da Saída</label>
+                    <input type="text" id="caixa-motivo" placeholder="Ex: Pagamento de Gelo, Luz, Funcionário...">
+                </div>
+                <div class="field-group">
+                    <label>Valor Retirado (R$)</label>
+                    <input type="number" id="caixa-valor" step="0.01" placeholder="0.00">
+                </div>
+                <button class="btn btn-danger" onclick="app.registrarSaida()" style="margin-bottom: 20px;">CONFIRMAR SAÍDA</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RELATÓRIOS -->
+    <div id="tab-relatorio" class="hidden">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span>Vendas em Dinheiro/Pix</span>
+                <h2 id="rel-entradas" style="color: var(--success);">R$ 0,00</h2>
+            </div>
+            <div class="stat-card">
+                <span>Saídas / Despesas</span>
+                <h2 id="rel-saidas" style="color: var(--danger);">R$ 0,00</h2>
+            </div>
+            <div class="stat-card">
+                <span>Total a Receber (Fiados)</span>
+                <h2 id="rel-fiados" style="color: var(--fiado);">R$ 0,00</h2>
+            </div>
+            <div class="stat-card">
+                <span>Lucro Líquido Real</span>
+                <h2 id="rel-lucro" style="color: var(--primary);">R$ 0,00</h2>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 25px;">📑 Histórico Recente de Movimentações</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                            <th>Tipo</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-historico"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- AJUSTES & BACKUP -->
+    <div id="tab-config" class="hidden">
+        <div class="card">
+            <h2 style="font-size: 2rem; font-weight: 900; margin-bottom: 20px;">⚙️ Gestão de Dados</h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">Baixe o backup para segurança ou transfira para outro dispositivo.</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div style="background: rgba(0,0,0,0.2); padding: 30px; border-radius: 20px; border: 1px solid var(--border);">
+                    <h4 style="margin-bottom: 15px;">📥 Salvar Dados</h4>
+                    <button class="btn btn-info" style="width: 100%;" onclick="app.baixarBackup()">GERAR ARQUIVO DE BACKUP</button>
+                </div>
+                
+                <div style="background: rgba(0,0,0,0.2); padding: 30px; border-radius: 20px; border: 1px solid var(--border);">
+                    <h4 style="margin-bottom: 15px;">📤 Restaurar Dados</h4>
+                    <input type="file" id="file-import" style="display: none;" onchange="app.importarBackup(event)">
+                    <button class="btn btn-outline" style="width: 100%;" onclick="document.getElementById('file-import').click()">CARREGAR ARQUIVO</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="border-color: var(--danger);">
+            <h3 style="color: var(--danger); margin-bottom: 10px;">🔴 ZERAR TUDO</h3>
+            <p style="font-size: 0.8rem; margin-bottom: 20px;">Isso apagará permanentemente todos os produtos, fiados e histórico.</p>
+            <button class="btn btn-danger" onclick="app.resetarSistema()">APAGAR TODO O BANCO DE DADOS</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- MODAL DE DIVISÃO DE CONTA -->
+<div id="modal-dividir" class="modal-overlay hidden">
+    <div class="card" style="width: 450px; text-align: center;">
+        <h2 style="margin-bottom: 15px;">➗ Dividir Conta</h2>
+        <div style="padding: 20px; background: rgba(0,0,0,0.2); border-radius: 15px; margin-bottom: 25px;">
+            <span style="font-size: 0.8rem; color: var(--text-muted);">TOTAL DA MESA:</span>
+            <h3 id="modal-total-valor" style="font-size: 2rem; color: var(--primary);">R$ 0,00</h3>
+        </div>
+
+        <div class="field-group">
+            <label>Dividir por quantas pessoas?</label>
+            <input type="number" id="qtd-pessoas" value="2" min="1" oninput="app.calcularDivisaoNaHora()">
+        </div>
+
+        <div style="margin-bottom: 30px;">
+            <span style="font-size: 0.8rem; color: var(--text-muted);">CADA UM PAGA:</span>
+            <h2 id="modal-resultado-divisao" style="font-size: 2.5rem; font-weight: 900; color: var(--success);">R$ 0,00</h2>
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%;" onclick="app.fecharModalDividir()">VOLTAR</button>
+    </div>
+</div>
+
+<script>
+const app = {
+    // BANCO DE DADOS LOCAL
+    db: {
+        estoque: JSON.parse(localStorage.getItem('bar_felipe_prod')) || [],
+        comandas: JSON.parse(localStorage.getItem('bar_felipe_com')) || {},
+        fiados: JSON.parse(localStorage.getItem('bar_felipe_fia')) || {},
+        historico: JSON.parse(localStorage.getItem('bar_felipe_hist')) || []
+    },
+    
+    clienteAtivo: null,
+
+    init() {
+        this.renderAll();
+    },
+
+    save() {
+        localStorage.setItem('bar_felipe_prod', JSON.stringify(this.db.estoque));
+        localStorage.setItem('bar_felipe_com', JSON.stringify(this.db.comandas));
+        localStorage.setItem('bar_felipe_fia', JSON.stringify(this.db.fiados));
+        localStorage.setItem('bar_felipe_hist', JSON.stringify(this.db.historico));
+    },
+
+    renderAll() {
+        this.renderClientes();
+        this.renderEstoque();
+        this.renderFiados();
+        this.renderHistorico();
+        this.renderFavoritos();
+        this.atualizarSelectProdutos();
+        this.verificarAlertasEstoque();
+        this.save();
+    },
+
+    // --- ABA ATENDIMENTO ---
+    abrirComanda() {
+        const nome = document.getElementById('input-cliente').value.trim();
+        if(!nome) return alert("Digite o nome do cliente ou mesa!");
+        if(this.db.comandas[nome]) return alert("Essa conta já está aberta!");
+        
+        this.db.comandas[nome] = {
+            itens: [],
+            abertaEm: new Date().toLocaleString()
+        };
+        
+        document.getElementById('input-cliente').value = '';
+        this.renderClientes();
+        this.selecionarCliente(nome);
+    },
+
+    selecionarCliente(nome) {
+        this.clienteAtivo = nome;
+        document.getElementById('painel-vazio').classList.add('hidden');
+        document.getElementById('painel-ativo').classList.remove('hidden');
+        document.getElementById('cliente-nome-topo').innerText = nome;
+        document.getElementById('cliente-status').innerText = `Aberta em: ${this.db.comandas[nome].abertaEm}`;
+        
+        this.renderItensComanda();
+        this.renderClientes();
+    },
+
+    renderClientes() {
+        const busca = document.getElementById('busca-atendimento').value.toLowerCase();
+        const container = document.getElementById('lista-clientes');
+        container.innerHTML = '';
+        
+        Object.keys(this.db.comandas).forEach(nome => {
+            if(nome.toLowerCase().includes(busca)) {
+                const total = this.db.comandas[nome].itens.reduce((acc, i) => acc + i.venda, 0);
+                const btn = document.createElement('div');
+                btn.className = `cliente-btn ${this.clienteAtivo === nome ? 'active' : ''}`;
+                btn.onclick = () => this.selecionarCliente(nome);
+                btn.innerHTML = `
+                    <div>
+                        <div class="nome">${nome}</div>
+                        <div class="meta">${this.db.comandas[nome].itens.length} itens pedidos</div>
+                    </div>
+                    <div class="valor">R$ ${total.toFixed(2)}</div>
+                `;
+                container.appendChild(btn);
+            }
+        });
+    },
+
+    renderFavoritos() {
+        const container = document.getElementById('favoritos-container');
+        const favs = this.db.estoque.filter(p => p.favorito);
+        
+        if(favs.length === 0) {
+            container.innerHTML = '<small style="color:var(--text-muted)">Nenhum favorito definido.</small>';
+            return;
+        }
+
+        container.innerHTML = favs.map(p => `
+            <button class="btn-quick" onclick="app.adicionarRapido(${p.id})">
+                ${p.nome}
+            </button>
+        `).join('');
+    },
+
+    adicionarRapido(id) {
+        if(!this.clienteAtivo) return alert("Selecione uma conta primeiro!");
+        const p = this.db.estoque.find(x => x.id == id);
+        if(!p) return;
+        
+        const itemVenda = {
+            ...p,
+            vendaId: Date.now() + Math.random(),
+            data: new Date().toLocaleTimeString()
+        };
+
+        this.db.comandas[this.clienteAtivo].itens.push(itemVenda);
+        this.renderItensComanda();
+        this.renderClientes();
+        this.save();
+    },
+
+    lancarProduto() {
+        const id = document.getElementById('select-produtos-venda').value;
+        if(!id) return;
+        this.adicionarRapido(id);
+    },
+
+    darCortesia() {
+        if(!this.clienteAtivo) return;
+        const id = document.getElementById('select-produtos-venda').value;
+        if(!id) return;
+        
+        const p = this.db.estoque.find(x => x.id == id);
+        if(p) {
+            const itemCortesia = {
+                ...p,
+                venda: 0, // Preço zero para o cliente
+                vendaId: Date.now() + Math.random(),
+                data: new Date().toLocaleTimeString(),
+                cortesia: true
+            };
+            this.db.comandas[this.clienteAtivo].itens.push(itemCortesia);
+            this.renderItensComanda();
+            this.save();
+        }
+    },
+
+    renderItensComanda() {
+        const container = document.getElementById('itens-comanda');
+        const itens = this.db.comandas[this.clienteAtivo].itens;
+        
+        container.innerHTML = itens.length === 0 ? 
+            '<p style="text-align:center; padding: 50px; opacity: 0.5;">Nenhum item lançado ainda...</p>' : 
+            itens.map(item => `
+                <div class="item-row" style="${item.cortesia ? 'border-left: 5px solid var(--fiado)' : ''}">
+                    <div class="info">
+                        <h4>${item.nome} ${item.cortesia ? '(🎁)' : ''}</h4>
+                        <span>Lançado às ${item.data}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span class="price">${item.venda === 0 ? 'GRÁTIS' : 'R$ '+item.venda.toFixed(2)}</span>
+                        <span class="remove-btn" onclick="app.removerItemComanda(${item.vendaId})">✕</span>
+                    </div>
+                </div>
+            `).join('');
+
+        const total = itens.reduce((acc, i) => acc + i.venda, 0);
+        document.getElementById('total-venda-exibicao').innerText = `R$ ${total.toFixed(2)}`;
+    },
+
+    removerItemComanda(vendaId) {
+        this.db.comandas[this.clienteAtivo].itens = this.db.comandas[this.clienteAtivo].itens.filter(i => i.vendaId !== vendaId);
+        this.renderItensComanda();
+        this.renderClientes();
+        this.save();
+    },
+
+    compartilharWhatsApp() {
+        if(!this.clienteAtivo) return;
+        const itens = this.db.comandas[this.clienteAtivo].itens;
+        const total = itens.reduce((acc, i) => acc + i.venda, 0);
+        
+        let msg = `*--- BAR DO FELIPE ---*\n`;
+        msg += `*CONTA:* ${this.clienteAtivo}\n`;
+        msg += `------------------------\n`;
+        itens.forEach(i => {
+            msg += `• ${i.nome}: ${i.venda === 0 ? 'CORTESIA' : 'R$ '+i.venda.toFixed(2)}\n`;
+        });
+        msg += `------------------------\n`;
+        msg += `*TOTAL: R$ ${total.toFixed(2)}*\n\n`;
+        msg += `_Agradecemos a preferência!_`;
+
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    },
+
+    fecharVenda(tipo) {
+        const itens = this.db.comandas[this.clienteAtivo].itens;
+        if(itens.length === 0) return alert("Não há itens nesta conta!");
+        
+        const total = itens.reduce((acc, i) => acc + i.venda, 0);
+        const custoTotal = itens.reduce((acc, i) => acc + i.custo, 0);
+        const lucro = total - custoTotal;
+
+        itens.forEach(itemVendido => {
+            const p = this.db.estoque.find(x => x.id === itemVendido.id);
+            if(p) p.qtd -= 1;
+        });
+
+        if(tipo === 'fiado') {
+            const atual = this.db.fiados[this.clienteAtivo] || { valor: 0, data: '' };
+            this.db.fiados[this.clienteAtivo] = { valor: atual.valor + total, data: new Date().toLocaleDateString() };
+        }
+
+        this.db.historico.push({
+            id: Date.now(), data: new Date().toLocaleString(),
+            desc: `Venda ${tipo === 'fiado' ? '(FIADO)' : ''}: ${this.clienteAtivo}`,
+            valor: total, lucro: lucro, tipo: tipo === 'fiado' ? 'fiado' : 'pago'
+        });
+
+        delete this.db.comandas[this.clienteAtivo];
+        this.clienteAtivo = null;
+        document.getElementById('painel-ativo').classList.add('hidden');
+        document.getElementById('painel-vazio').classList.remove('hidden');
+        this.renderAll();
+    },
+
+    cancelarComanda() {
+        if(confirm(`Tem certeza que deseja EXCLUIR a conta de ${this.clienteAtivo}?`)) {
+            delete this.db.comandas[this.clienteAtivo];
+            this.clienteAtivo = null;
+            document.getElementById('painel-ativo').classList.add('hidden');
+            document.getElementById('painel-vazio').classList.remove('hidden');
+            this.renderAll();
+        }
+    },
+
+    // --- DIVISÃO ---
+    abrirModalDividir() {
+        const itens = this.db.comandas[this.clienteAtivo].itens;
+        const total = itens.reduce((acc, i) => acc + i.venda, 0);
+        document.getElementById('modal-total-valor').innerText = `R$ ${total.toFixed(2)}`;
+        document.getElementById('modal-dividir').classList.remove('hidden');
+        this.calcularDivisaoNaHora();
+    },
+    fecharModalDividir() { document.getElementById('modal-dividir').classList.add('hidden'); },
+    calcularDivisaoNaHora() {
+        const totalStr = document.getElementById('modal-total-valor').innerText.replace('R$ ', '');
+        const total = parseFloat(totalStr);
+        const qtd = parseInt(document.getElementById('qtd-pessoas').value) || 1;
+        document.getElementById('modal-resultado-divisao').innerText = `R$ ${(total/qtd).toFixed(2)}`;
+    },
+
+    // --- ABA ESTOQUE ---
+    toggleCamposVolumes() {
+        const tipo = document.getElementById('estoque-tipo-entrada').value;
+        const colSimples = document.getElementById('col-qtd-simples');
+        const colVols = document.getElementById('col-volumes');
+        const colItens = document.getElementById('col-itens-vol');
+
+        if(tipo === 'unidade') {
+            colSimples.classList.remove('hidden');
+            colVols.classList.add('hidden');
+            colItens.classList.add('hidden');
+        } else {
+            colSimples.classList.add('hidden');
+            colVols.classList.remove('hidden');
+            colItens.classList.remove('hidden');
+        }
+    },
+
+    salvarProduto() {
+        const idEdit = document.getElementById('estoque-id-edit').value;
+        const nome = document.getElementById('estoque-nome').value.trim();
+        const custo = parseFloat(document.getElementById('estoque-custo').value) || 0;
+        const venda = parseFloat(document.getElementById('estoque-venda').value) || 0;
+        const min = parseInt(document.getElementById('estoque-alerta').value) || 0;
+        const tipo = document.getElementById('estoque-tipo-entrada').value;
+        const fav = document.getElementById('estoque-favorito').checked;
+
+        let qtdFinal = 0;
+        if(tipo === 'unidade') {
+            qtdFinal = parseInt(document.getElementById('estoque-qtd-base').value) || 0;
+        } else {
+            const vols = parseInt(document.getElementById('estoque-vols').value) || 0;
+            const perVol = parseInt(document.getElementById('estoque-itens-vol').value) || 0;
+            qtdFinal = vols * perVol;
+        }
+
+        if(!nome) return alert("O nome do produto é obrigatório!");
+
+        if(idEdit) {
+            const idx = this.db.estoque.findIndex(p => p.id == idEdit);
+            this.db.estoque[idx] = { ...this.db.estoque[idx], nome, custo, venda, qtd: (this.db.estoque[idx].qtd + qtdFinal), minimo: min, favorito: fav };
+        } else {
+            this.db.estoque.push({ id: Date.now(), nome, custo, venda, qtd: qtdFinal, minimo: min, favorito: fav });
+        }
+
+        this.limparFormEstoque();
+        this.renderAll();
+    },
+
+    renderEstoque() {
+        const lista = document.getElementById('lista-estoque');
+        lista.innerHTML = this.db.estoque.map(p => `
+            <tr style="${p.qtd <= p.minimo ? 'background: rgba(239, 68, 68, 0.1)' : ''}">
+                <td><strong>${p.nome}</strong> ${p.favorito ? '⭐' : ''}</td>
+                <td>R$ ${p.venda.toFixed(2)}</td>
+                <td><span class="badge ${p.qtd <= p.minimo ? 'badge-fardo' : 'badge-unid'}">${p.qtd} un</span></td>
+                <td>${p.minimo}</td>
+                <td style="text-align: right;">
+                    <button class="btn-outline" style="padding: 8px 12px;" onclick="app.editarProduto(${p.id})">EDITAR</button>
+                </td>
+            </tr>
+        `).join('');
+    },
+
+    editarProduto(id) {
+        const p = this.db.estoque.find(x => x.id == id);
+        document.getElementById('estoque-id-edit').value = p.id;
+        document.getElementById('estoque-nome').value = p.nome;
+        document.getElementById('estoque-custo').value = p.custo;
+        document.getElementById('estoque-venda').value = p.venda;
+        document.getElementById('estoque-favorito').checked = p.favorito;
+        document.getElementById('btn-cancelar-edit').style.display = 'inline-flex';
+    },
+
+    limparFormEstoque() {
+        document.getElementById('estoque-id-edit').value = '';
+        document.getElementById('estoque-nome').value = '';
+        document.getElementById('btn-cancelar-edit').style.display = 'none';
+    },
+
+    verificarAlertasEstoque() {
+        const baixos = this.db.estoque.filter(p => p.qtd <= p.minimo).length;
+        document.getElementById('estoque-alerta-area').innerHTML = baixos > 0 ? 
+            `<div class="alert-estoque">⚠️ ${baixos} PRODUTOS COM ESTOQUE BAIXO!</div>` : '';
+    },
+
+    // --- FINANCEIRO ---
+    registrarSaida() {
+        const m = document.getElementById('caixa-motivo').value.trim();
+        const v = parseFloat(document.getElementById('caixa-valor').value);
+        if(!m || !v) return alert("Preencha tudo!");
+
+        this.db.historico.push({ id: Date.now(), data: new Date().toLocaleString(), desc: `SAÍDA: ${m}`, valor: v, lucro: -v, tipo: 'saida' });
+        document.getElementById('caixa-motivo').value = '';
+        document.getElementById('caixa-valor').value = '';
+        this.renderAll();
+    },
+
+    renderHistorico() {
+        const hist = [...this.db.historico].reverse();
+        const lista = document.getElementById('lista-historico');
+        let ent = 0, sai = 0, luc = 0;
+
+        lista.innerHTML = hist.map(h => {
+            if(h.tipo === 'pago') ent += h.valor;
+            if(h.tipo === 'saida') sai += h.valor;
+            luc += h.lucro || 0;
+            return `<tr><td>${h.data}</td><td>${h.desc}</td><td style="color:${h.tipo==='saida'?'var(--danger)':'var(--success)'}">R$ ${h.valor.toFixed(2)}</td><td>${h.tipo}</td><td><button onclick="app.excluirHist(${h.id})">🗑️</button></td></tr>`;
+        }).join('');
+
+        document.getElementById('rel-entradas').innerText = `R$ ${ent.toFixed(2)}`;
+        document.getElementById('rel-saidas').innerText = `R$ ${sai.toFixed(2)}`;
+        document.getElementById('rel-lucro').innerText = `R$ ${luc.toFixed(2)}`;
+        document.getElementById('rel-fiados').innerText = `R$ ${Object.values(this.db.fiados).reduce((a,b)=>a+b.valor,0).toFixed(2)}`;
+    },
+
+    excluirHist(id) {
+        this.db.historico = this.db.historico.filter(h => h.id != id);
+        this.renderAll();
+    },
+
+    // --- FIADOS ---
+    renderFiados() {
+        const container = document.getElementById('lista-fiados');
+        const nomes = Object.keys(this.db.fiados);
+        container.innerHTML = nomes.map(nome => {
+            const f = this.db.fiados[nome];
+            if(f.valor <= 0) return '';
+            return `<tr><td>${nome}</td><td>${f.data}</td><td style="color:var(--danger)">R$ ${f.valor.toFixed(2)}</td><td style="text-align:right"><button class="btn btn-success" style="padding:10px" onclick="app.pagarFiado('${nome}')">DAR BAIXA</button></td></tr>`;
+        }).join('');
+    },
+
+    pagarFiado(nome) {
+        const val = this.db.fiados[nome].valor;
+        this.db.historico.push({ id: Date.now(), data: new Date().toLocaleString(), desc: `PAGTO FIADO: ${nome}`, valor: val, lucro: 0, tipo: 'pago' });
+        delete this.db.fiados[nome];
+        this.renderAll();
+    },
+
+    // --- UTILITARIOS ---
+    showTab(tab) {
+        ['vendas', 'fiados', 'caixa', 'estoque', 'relatorio', 'config'].forEach(t => {
+            document.getElementById('tab-' + t).classList.add('hidden');
+            document.getElementById('nav-' + t).classList.remove('active');
+        });
+        document.getElementById('tab-' + tab).classList.remove('hidden');
+        document.getElementById('nav-' + tab).classList.add('active');
+    },
+
+    atualizarSelectProdutos() {
+        const s = document.getElementById('select-produtos-venda');
+        s.innerHTML = this.db.estoque.map(p => `<option value="${p.id}">${p.nome} (R$ ${p.venda})</option>`).join('');
+    },
+
+    baixarBackup() {
+        const data = JSON.stringify(this.db);
+        const blob = new Blob([data], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `backup_bar_felipe_${new Date().toLocaleDateString().replace(/\//g, '-')}.json`;
+        a.click();
+    },
+
+    importarBackup(event) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            this.db = JSON.parse(e.target.result);
+            this.renderAll();
+            alert("Backup Restaurado!");
+        };
+        reader.readAsText(event.target.files[0]);
+    },
+
+    resetarSistema() {
+        if(confirm("CUIDADO! Isso apagará TUDO. Deseja continuar?")) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+};
+
+app.init();
+</script>
+</body>
+</html>
